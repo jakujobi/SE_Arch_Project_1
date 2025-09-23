@@ -1,13 +1,17 @@
-
 # Requirements Document — Role-Based News App (Class MVP)
 
-Author - John AKujobi
+Author: John Akujobi
+
+Last Updated: 2025-09-22
+
+Acknowledged (draft): Qwen3-Next-80B-A3B-Thinking (self_hosted)
 
 ## 1. Purpose
 
 * Build a **simple, $0-cost** news site for a class demo.
-* Support **tier-gated access** to content with  **YAML-driven rules** .
-* Prioritize  **simplicity** : one Django app, server-rendered pages,  **no Celery/Redis** .
+* Support **four tiers** with **metered access** to article details.
+* Keep **configuration in `settings.py`** (with a few optional  **`.env` overrides** ).
+* Use  **RSS only** , server-rendered Django, and  **SQLite** .
 
 ---
 
@@ -15,32 +19,33 @@ Author - John AKujobi
 
 ### In scope
 
-* **Sources:** RSS feeds only (TechCrunch, The Verge, Ars Technica, Wired, Engadget), configurable in YAML.
+* **Sources:** RSS feeds (e.g., TechCrunch, The Verge, Ars Technica, Wired, Engadget).
 * **Tiers (4):**
   * `anonymous` (before signup)
-  * `free` (after signup)
-  * `standard` (simulated subscription via admin)
+  * `free` (after signup, non-paying)
+  * `standard` (simulated subscription via admin toggle)
   * `premium` (admin toggle)
-* **Metering:** daily read limits; displayed counter; soft wall on limit.
-* **Pages:** Headlines, Detail, Search, Account, and a superuser **Reload Config** endpoint.
-* **Config:** All tier rules, limits, page access, and UI text controlled via  **YAML** .
-* **DB:** **SQLite** for demo; optional Postgres if `DATABASE_URL` present.
-* **Auth:** Email + password (no email verification).
-* **Admin:** All 4 teammates are superusers; can set user tiers; manage sources/tags.
+* **Metering:** per-day read limits; counter display; **soft wall** at limit.
+* **Pages:** Headlines, Detail, Search, Account.
+* **Admin:** Superusers (the 4 teammates) can set user tiers; manage sources.
+* **Config:** Hardcoded in `settings.py` with optional environment overrides for a few numbers.
+* **DB:** **SQLite** for the demo; optional Postgres if `DATABASE_URL` is set.
+* **Auth:** Email + password (no verification).
 
 ### Out of scope
 
-* Payments, SSO, non-RSS external APIs for MVP.
-* Full article body storage from external sources.
+* Payments/SSO.
+* Non-RSS APIs for MVP.
+* Storing full external article bodies (we show **snippet + link-out** only).
 
 ---
 
 ## 3. Users & Tiers
 
-* **anonymous:** can browse headlines; has limited full reads/day before signup.
-* **free:** logged-in non-paying user; limited full reads/day.
-* **standard:** logged-in user with higher daily limit; set via admin.
-* **premium:** logged-in user with unlimited reads; set via admin.
+* **anonymous:** limited full reads/day via cookie; headlines + search allowed.
+* **free:** logged-in non-paying; limited full reads/day via DB.
+* **standard:** logged-in; higher daily limit (simulated subscription).
+* **premium:** logged-in; unlimited (no metering).
 
 > New signups default to  **free** .
 
@@ -48,126 +53,130 @@ Author - John AKujobi
 
 ## 4. Functional Requirements
 
-### 4.1 Configuration (YAML as source of truth)
+### 4.1 Configuration (in `settings.py`)
 
-* Must define:
-  * **App:** site name, timezone (`America/Chicago`).
-  * **Content:** RSS feeds; refresh TTL; lazy-refresh toggle.
-  * **Taxonomy:** small allow-list of categories; auto-tag from feed keywords.
-  * **Search:** fields (`title`, `summary`) and basic mode.
-  * **UI:** banner/CTA texts; counter visibility.
-  * **Tiers:** per-tier settings for:
-    * Page access: `headlines`, `detail`, `search` (enabled/disabled).
-    * Content level per page: `headline | summary | detail`.
-    * Metering: `applies`, `reads_per_day`, `count_scope` (detail only).
-    * Content rules: allowed categories/sources; snippet length.
-    * UI flags (show reads-left, per-tier CTA text).
-* **Load on server start** .
-* **Manual reload only** via a **superuser-only** endpoint; on invalid YAML, keep last good config.
+* Define constants:
+  * `FEEDS: list[str]` — RSS feed URLs.
+  * `ANON_READS_PER_DAY: int` — default **3** (override via `.env` if desired).
+  * `FREE_READS_PER_DAY: int` — default  **5** .
+  * `STANDARD_READS_PER_DAY: int` — default  **11** .
+  * `TTL_MINUTES: int` — default **10** (freshness threshold).
+  * `LAZY_REFRESH: bool` — default **True** (non-blocking refresh after TTL).
+  * `TIER_CONFIG: dict` — minimal per-tier flags (e.g., headlines content level).
+  * Optional UI hint strings (e.g., anonymous/free/standard hints).
+* **Changes require a server restart** (no hot reload).
+* **Optional `.env` overrides** for the numeric knobs above.
 
 ### 4.2 Ingestion
 
-* **Command:** `ingest_news` fetches/normalizes RSS items into the DB.
-* **Dedup:** compute a stable hash (based on canonical link/fallbacks) and upsert.
-* **Timeouts:** per-feed timeouts; skip slow feeds.
-* **Refresh policy:**
-  * Show content immediately.
-  * If stale (`> TTL`), optionally trigger a **non-blocking** lazy refresh; avoid concurrent runs with a simple lock.
-  * Show a small “stale” indicator when beyond TTL.
+* **Management command** `ingest_news`:
+  * Fetch each RSS feed with a short timeout (≈3–5s).
+  * Normalize: `title`, `link`, `summary/snippet`, `published`, optional `image`.
+  * Compute **dedup hash** (e.g., sha256 of canonical link or link/title); **upsert** by hash.
+  * **Tags** : small allow-list mapping; store tags as JSON text on `Article`.
+* **Freshness:**
+  * Run command manually before demo.
+  * If `LAZY_REFRESH` and content is older than `TTL_MINUTES`, **serve immediately** and **kick a non-blocking refresh** (guard against concurrent runs).
+  * Show a tiny *“stale”* badge when content age > `TTL_MINUTES`.
 
-### 4.3 Content model & display
+### 4.3 Content & Display
 
-* Store  **title, summary/snippet, link (URL), source, published time** , optional image, tags/keywords.
-* **External content** is shown as **snippet + link-out** on the detail page (no full body).
-* **Headlines page** shows content per tier’s `content_level` (e.g., `headline` for anonymous; `summary` for others).
+* **Headlines page** shows cards with:
+  * `anonymous`: **headline** only (title).
+  * `free/standard/premium`: **summary** (title + snippet).
+* **Detail page** (all tiers enabled):
+  * Show our **snippet + “Read on source”** link (no full external body).
+* **Allowed categories/sources:** start with “allow all”.
 
-### 4.4 Metering & gating
+### 4.4 Metering & Soft Wall
 
-* **Count only on the Detail page** (per `count_scope = "detail"`).
-* **anonymous:** best-effort daily counter via  **signed cookie** ; resets at local midnight.
-* **free/standard:** daily counter via DB (`ReadEvent`); unique per `(user, article, date)` to avoid double counts.
-* **premium:** metering disabled.
-* **Soft wall:** when `reads_today >= reads_per_day`, show a single wall page with per-tier CTA text from YAML.
-* **Reads-left counter** visible when enabled in YAML.
+* **Count only on Detail page** .
+* **anonymous:** best-effort signed cookie `{count}:{YYYYMMDD}` in local timezone.
+* **free/standard:** `ReadEvent(user, article, date)` with **unique (user, article, date)** to avoid double counts.
+* **premium:** no counting; never walled.
+* **Soft wall** triggers at the exact limit; show one wall template with tier-specific CTA text.
+* **Reads-left counter** visible on pages where we show it.
 
 ### 4.5 Search
 
-* Query param `q`; `icontains` over YAML-listed fields (title, summary).
-* Return most recent results, capped (e.g., top 50).
+* Query param `q`; **basic `icontains`** over `title` + `summary`.
+* Return most recent results (cap ~50).
 
 ### 4.6 Admin
 
-* All teammates are  **superusers** .
+* All 4 teammates are  **superusers** .
 * Admin can:
-  * Toggle user tier ( **free/standard/premium** ).
-  * Enable/disable RSS sources.
-  * Edit article tags/categories if needed.
-  * Trigger **Reload Config** (validates; keeps last good config on failure).
+  * Toggle user tier (`free` / `standard` / `premium`).
+  * Enable/disable feeds (via `Source.enabled`).
+  * Optionally edit article tags.
 
 ---
 
 ## 5. Non-Functional Requirements
 
-* **Simplicity:** one Django app; no background workers/services.
-* **Cost:** $0 (RSS sources; SQLite).
+* **Simplicity:** one Django app; no Celery/Redis; server-rendered templates.
+* **Cost:** $0 (RSS + SQLite).
 * **Reliability:**
-  * On YAML error, retain last valid config and display an admin warning.
-  * On ingestion issues, serve last stored articles; skip failing feeds.
-* **Timezone:** all metering uses **America/Chicago** day boundaries.
-* **Licensing:** only store headline/snippet/link from external feeds.
+  * On ingest failure, skip the feed and keep last stored content.
+  * For anonymous metering, accept cookie resets (class demo).
+* **Timezone:** all daily limits use **America/Chicago** boundaries.
+* **Licensing:** store headline/snippet/link only.
 
 ---
 
-## 6. Data Requirements (entities & key fields)
+## 6. Data Requirements (schema summary)
 
-* **Source:** `name`, `type="rss"`, `url`, `enabled`.
-* **Article:** `source_id`, `title`, `url`, `summary`, `image_url?`, `published_at`, `keywords (text/json)`, `tags (text/json)`, `hash (unique)`.
-* **User:** Django auth user.
-* **UserProfile:** `user_id (1:1)`, `tier ∈ {"free","standard","premium"}` (default `free`).
-* **ReadEvent:** `user_id`, `article_id`, `date` (local date); unique on `(user, article, date)`.
+* **Source** : `name`, `type ("rss")`, `url`, `enabled`.
+* **Article** : `source_id`, `title`, `url`, `summary`, `image_url?`, `published_at`, `tags (JSON text)`, `keywords (JSON text)`, `hash (unique)`, `ingested_at`.
+* **User** : Django auth user.
+* **UserProfile** : `user_id (1:1)`, `tier ∈ {"free","standard","premium"}` default  **free** .
+* **ReadEvent** : `user_id`, `article_id`, `date (local)`, `created_at`;  **unique (user, article, date)** .
+
+**Indexes**
+
+* `Article(published_at DESC)`, `Article(title)`, `ReadEvent(user, date)`.
 
 ---
 
-## 7. Page/Endpoint Requirements
+## 7. Endpoints / Pages
 
 * **GET /** — Headlines
-  * Enforce page enablement.
-  * Filter by allowed categories/sources if configured.
-  * Render per-tier `content_level`.
-  * Show reads-left counter and tier hints per YAML.
+  * Enforce simple per-tier display (headline vs summary).
+  * Show reads-left counter and any tier hint text.
 * **GET /a/** — Detail
-  * Enforce page enablement.
-  * Apply metering (cookie or DB).
-  * On limit, show soft wall; else render snippet + link-out.
+  * Apply metering (cookie or DB). On limit → soft wall; else snippet + link-out.
 * **GET /search?q=** — Search
-  * `icontains` over configured fields; cap results by recency.
+  * `icontains` over title + summary; cap results by recency.
 * **GET /account** — Account
   * Show current tier and reads left today.
-* **POST /admin/reload-config** — Superuser only
-  * Reload YAML; success swaps config; failure keeps prior config and reports error.
+* **/admin/** — Django admin
+  * Superusers set user tiers; manage sources; view articles.
 
 ---
 
-## 8. Tier Defaults (configurable in YAML)
+## 8. Tier Defaults (in `settings.py`)
 
-* **anonymous:** `reads_per_day = 3`
-* **free:** `reads_per_day = 5`
-* **standard:** `reads_per_day = 11`
-* **premium:** unlimited (metering off)
-* **Headlines content level:** `anonymous = headline`, others = `summary`.
-* **Detail page:** enabled for all tiers; shows snippet + link-out.
+* `ANON_READS_PER_DAY = 3`
+* `FREE_READS_PER_DAY = 5`
+* `STANDARD_READS_PER_DAY = 11`
+* `PREMIUM` = unlimited (metering disabled)
+* Headlines content level:
+  * `anonymous = "headline"`, others = `"summary"`.
+* Detail page enabled for all tiers.
+
+> Optional `.env` overrides for the numeric limits and `TTL_MINUTES`, `LAZY_REFRESH`.
 
 ---
 
 ## 9. Acceptance Criteria (MVP)
 
-* YAML controls  **tiers, page access, content levels, limits, UI text** ; manual reload works and validates.
-* RSS ingestion populates articles; duplicates are avoided; slow feeds don’t block; stale indicator shown when beyond TTL.
+* Config lives in  **`settings.py`** ; (optional) `.env` can override core numeric limits and refresh knobs.
+* RSS ingestion populates articles; duplicates avoided; stale badge appears when applicable.
 * **Metering works exactly** :
-* anonymous: 3 reads/day → soft wall at 4th; resets at local midnight.
-* free: 5 reads/day → soft wall at 6th.
-* standard: 11 reads/day → soft wall at 12th.
-* premium: never soft-walled.
-* Headlines, Detail, Search, Account pages render per tier rules; reads-left counter displays when enabled.
-* Admin can set user tiers and reload config.
-* Works locally on **SQLite** for the class demo.
+* `anonymous`: 3 reads/day → soft wall at 4th; resets at local midnight.
+* `free`: 5 reads/day → soft wall at 6th.
+* `standard`: 11 reads/day → soft wall at 12th.
+* `premium`: never soft-walled.
+* Headlines, Detail, Search, Account pages render correctly; counters show when enabled.
+* Admins can set user tiers and enable/disable sources.
+* Runs locally on **SQLite** for the class demo.
