@@ -1,0 +1,4 @@
+django
+feedparser
+requests
+python-dateutil
