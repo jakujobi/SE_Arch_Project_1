@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="600px" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Learning Hub</title>
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#004085" offset="0%"></stop>
+            <stop stop-color="#0069d9" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#28a745" offset="0%"></stop>
+            <stop stop-color="#20c997" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Learning-Hub" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect fill="#FFFFFF" x="0" y="0" width="800" height="600"></rect>
+        <g id="Background" transform="translate(50.000000, 50.000000)">
+            <rect id="Rectangle" fill="url(#linearGradient-1)" opacity="0.1" x="0" y="0" width="700" height="500" rx="20"></rect>
+        </g>
+        <g id="Books" transform="translate(100.000000, 150.000000)">
+            <rect id="Book-1" fill="#004085" x="0" y="0" width="60" height="250" rx="5"></rect>
+            <rect id="Book-2" fill="#28a745" x="70" y="20" width="50" height="230" rx="5"></rect>
+            <rect id="Book-3" fill="#FFC107" x="130" y="40" width="40" height="210" rx="5"></rect>
+            <rect id="Book-4" fill="#6C757D" x="180" y="60" width="30" height="190" rx="5"></rect>
+            <line x1="30" y1="20" x2="30" y2="230" id="Line-1" stroke="#FFFFFF" stroke-width="2"></line>
+            <line x1="95" y1="40" x2="95" y2="230" id="Line-2" stroke="#FFFFFF" stroke-width="2"></line>
+            <line x1="150" y1="60" x2="150" y2="230" id="Line-3" stroke="#FFFFFF" stroke-width="2"></line>
+            <line x1="195" y1="80" x2="195" y2="230" id="Line-4" stroke="#FFFFFF" stroke-width="2"></line>
+        </g>
+        <g id="Laptop" transform="translate(350.000000, 200.000000)">
+            <path d="M0,200 L300,200 L300,20 C300,8.954305 291.045695,0 280,0 L20,0 C8.954305,0 1.3527075e-15,8.954305 0,20 L0,200 Z" id="Screen" fill="#004085"></path>
+            <rect id="Display" fill="#FFFFFF" x="20" y="20" width="260" height="160" rx="5"></rect>
+            <path d="M-20,200 L320,200 L320,220 C320,231.045695 311.045695,240 300,240 L0,240 C-11.045695,240 -20,231.045695 -20,220 L-20,200 Z" id="Base" fill="#004085"></path>
+            <g id="Content" transform="translate(40.000000, 40.000000)">
+                <rect id="Header" fill="#F8F9FA" x="0" y="0" width="220" height="30" rx="5"></rect>
+                <rect id="Title" fill="#004085" opacity="0.7" x="10" y="10" width="100" height="10" rx="2"></rect>
+                <rect id="Menu-1" fill="#28a745" opacity="0.7" x="130" y="10" width="20" height="10" rx="2"></rect>
+                <rect id="Menu-2" fill="#28a745" opacity="0.7" x="160" y="10" width="20" height="10" rx="2"></rect>
+                <rect id="Menu-3" fill="#28a745" opacity="0.7" x="190" y="10" width="20" height="10" rx="2"></rect>
+                <rect id="Content-1" fill="#F8F9FA" x="0" y="40" width="220" height="20" rx="5"></rect>
+                <rect id="Content-2" fill="#F8F9FA" x="0" y="70" width="220" height="20" rx="5"></rect>
+                <rect id="Content-3" fill="#F8F9FA" x="0" y="100" width="220" height="20" rx="5"></rect>
+            </g>
+        </g>
+        <g id="Graduation-Cap" transform="translate(600.000000, 150.000000)">
+            <path d="M0,50 L100,0 L200,50 L100,100 L0,50 Z" id="Cap-Base" fill="#004085"></path>
+            <rect id="Tassel" fill="#FFC107" x="95" y="100" width="10" height="50" rx="2"></rect>
+            <circle id="Tassel-End" fill="#FFC107" cx="100" cy="160" r="10"></circle>
+        </g>
+        <g id="Certificate" transform="translate(550.000000, 350.000000)">
+            <rect id="Paper" fill="#FFFFFF" x="0" y="0" width="150" height="200" rx="10"></rect>
+            <rect id="Border" stroke="#28a745" stroke-width="3" x="1.5" y="1.5" width="147" height="197" rx="10"></rect>
+            <rect id="Line-1" fill="#F8F9FA" x="20" y="40" width="110" height="10" rx="2"></rect>
+            <rect id="Line-2" fill="#F8F9FA" x="20" y="60" width="110" height="10" rx="2"></rect>
+            <rect id="Line-3" fill="#F8F9FA" x="20" y="80" width="110" height="10" rx="2"></rect>
+            <rect id="Line-4" fill="#F8F9FA" x="20" y="100" width="110" height="10" rx="2"></rect>
+            <circle id="Seal" fill="#FFC107" cx="75" cy="150" r="20"></circle>
+            <path d="M65,150 L75,140 L85,150 L75,160 L65,150 Z" id="Star" fill="#FFFFFF"></path>
+        </g>
+    </g>
+</svg>

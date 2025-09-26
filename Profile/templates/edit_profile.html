@@ -1,0 +1,128 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="profile-header py-4 text-center">
+  <div class="container">
+    <h1 class="display-5 fw-bold mb-2">Edit Your Profile</h1>
+    <p class="lead mb-0">Update your personal information and preferences</p>
+  </div>
+</div>
+
+<div class="container py-3">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="profile-edit-container">
+        <div class="profile-form-container p-4 p-md-5">
+          <form
+            method="post"
+            enctype="multipart/form-data"
+            class="profile-form"
+          >
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-4 mb-4 mb-md-0 text-center">
+                <div class="profile-picture-container mb-3">
+                  <div
+                    class="profile-picture-wrapper mx-auto"
+                    style="max-width: 150px"
+                  >
+                    {% if user.profile.profile_picture %}
+                    <img
+                      src="{{ user.profile.profile_picture.url }}"
+                      class="profile-picture-preview img-fluid rounded-circle"
+                      alt="Profile Picture"
+                    />
+                    {% else %}
+                    <img
+                      src="{% static 'images/default_profile.png' %}"
+                      class="profile-picture-preview img-fluid rounded-circle"
+                      alt="Default Profile Picture"
+                    />
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label
+                    for="{{ form.profile_picture.id_for_label }}"
+                    class="form-label"
+                    >Profile Picture</label
+                  >
+                  <input
+                    type="file"
+                    name="{{ form.profile_picture.html_name }}"
+                    id="{{ form.profile_picture.id_for_label }}"
+                    class="form-control"
+                  />
+                  {% if form.profile_picture.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.profile_picture.errors %} {{ error }}
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="col-md-8 text-center">
+                <h3 class="h5 mb-3">Personal Information</h3>
+                <div class="row g-3 justify-content-center">
+                  {% for field in form %} {% if field.name != 'profile_picture' %}
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="mb-1">
+                        <label for="{{ field.id_for_label }}" class="form-label"
+                          >{{ field.label }}</label
+                        >
+                      </div>
+                      {{ field }} {% if field.errors %}
+                      <div class="invalid-feedback d-block">
+                        {% for error in field.errors %} {{ error }} {% endfor %}
+                      </div>
+                      {% endif %} {% if field.help_text %}
+                      <div class="form-text small">{{ field.help_text }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  {% endif %} {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            {% if user.advisor %}
+            <div class="mt-5">
+              <h3 class="h5 mb-3 text-center">Advisor Information</h3>
+              <div class="row g-3 justify-content-center">
+                {% for field in advisor_form %}
+                <div class="col-md-6">
+                  <div class="form-group mb-3">
+                    <div class="mb-1">
+                      <label for="{{ field.id_for_label }}" class="form-label"
+                        >{{ field.label }}</label
+                      >
+                    </div>
+                    {{ field }} {% if field.errors %}
+                    <div class="invalid-feedback d-block">
+                      {% for error in field.errors %} {{ error }} {% endfor %}
+                    </div>
+                    {% endif %} {% if field.help_text %}
+                    <div class="form-text small">{{ field.help_text }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-between mt-4">
+              <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back to Profile
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg me-2"></i>Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

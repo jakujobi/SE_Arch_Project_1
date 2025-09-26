@@ -69,12 +69,10 @@ class Article(models.Model):
     def __str__(self) -> str:
         return self.title
 
-
+""""
 class UserProfile(models.Model):
-    """
-    Per-user tier. Anonymous users have no row (they're not logged in).
-    New signups default to 'free' via a post_save signal.
-    """
+    #Per-user tier. Anonymous users have no row (they're not logged in).
+    #New signups default to 'free' via a post_save signal.
     TIER_CHOICES = [
         ("free", "Free"),
         ("standard", "Standard"),
@@ -91,7 +89,7 @@ class UserProfile(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user.username} [{self.tier}]"
-
+"""
 
 class ReadEvent(models.Model):
     """

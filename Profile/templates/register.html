@@ -1,0 +1,128 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="auth-container">
+        <div class="auth-form-container p-4 p-md-5">
+          <div class="text-center mb-4">
+            <div class="auth-icon">
+              <i class="bi bi-person-plus"></i>
+            </div>
+            <h2 class="h3 mb-0">Create Your Account</h2>
+          </div>
+
+          <form method="POST" class="auth-form">
+            {% csrf_token %}
+
+            <!-- Username field -->
+            <div class="form-floating mb-3">
+              <input
+                type="text"
+                name="username"
+                id="id_username"
+                class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                placeholder="Username"
+                value="{{ form.username.value|default:'' }}"
+                required
+              />
+              <label for="id_username">Username</label>
+              {% if form.username.errors %}
+              <div class="invalid-feedback">
+                {{ form.username.errors|join:" " }}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Password field -->
+            <div class="form-floating mb-3">
+              <input
+                type="password"
+                name="password1"
+                id="id_password1"
+                class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+                placeholder="Password"
+                required
+              />
+              <label for="id_password1">Password</label>
+              {% if form.password1.errors %}
+              <div class="invalid-feedback">
+                {{ form.password1.errors|join:" " }}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Display password requirements -->
+            <div class="form-text small mb-3">
+              Your password must be at least 12 characters long, and include at
+              least one uppercase letter, one lowercase letter, one number, and
+              one special character.
+            </div>
+
+            <!-- Confirm Password field -->
+            <div class="form-floating mb-3">
+              <input
+                type="password"
+                name="password2"
+                id="id_password2"
+                class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+                placeholder="Confirm Password"
+                required
+              />
+              <label for="id_password2">Confirm Password</label>
+              {% if form.password2.errors %}
+              <div class="invalid-feedback">
+                {{ form.password2.errors|join:" " }}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Email field -->
+            <div class="form-floating mb-3">
+              <input
+                type="email"
+                name="email"
+                id="id_email"
+                class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                placeholder="Email"
+                value="{{ form.email.value|default:'' }}"
+                required
+              />
+              <label for="id_email">Email</label>
+              {% if form.email.errors %}
+              <div class="invalid-feedback">
+                {{ form.email.errors|join:", " }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="form-check mb-4">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="agreeTerms"
+                required
+              />
+              <label class="form-check-label" for="agreeTerms">
+                I agree to the
+                <a href="#" class="text-primary">Terms of Service</a> and
+                <a href="#" class="text-primary">Privacy Policy</a>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+              <i class="bi bi-person-check me-2"></i>Register
+            </button>
+
+            <div class="text-center mt-4">
+              <p class="mb-0">
+                Already have an account?
+                <a href="{% url 'login' %}" class="text-primary">Login</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

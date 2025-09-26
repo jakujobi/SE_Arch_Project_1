@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'news.apps.NewsConfig',  # NEW: load our app (and its signals)
+    'Profile'
 ]
 
 MIDDLEWARE = [

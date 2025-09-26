@@ -8,7 +8,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
-from .models import Article, ReadEvent, Source, UserProfile
+from .models import Article, ReadEvent, Source
 
 
 @admin.register(Source)
@@ -38,6 +38,7 @@ class ReadEventAdmin(admin.ModelAdmin):
     ordering = ("-date", "-created_at")
 
 
+""""
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "tier")
@@ -56,8 +57,10 @@ class UserProfileAdmin(admin.ModelAdmin):
     @admin.action(description="Set selected users to PREMIUM")
     def make_premium(self, request, queryset):
         queryset.update(tier="premium")
+"""
 
 
+""""
 # ----- Optional: Inline profile on the User page (handy for demos) -----
 
 class UserProfileInline(admin.StackedInline):
@@ -65,6 +68,7 @@ class UserProfileInline(admin.StackedInline):
     can_delete = False
     fk_name = "user"
     extra = 0
+"""
 
 
 User = get_user_model()
@@ -76,6 +80,8 @@ except admin.sites.NotRegistered:
     pass
 
 
+""""
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
     inlines = [UserProfileInline]
+"""

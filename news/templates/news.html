@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center py-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold mb-3">Take Control of Your Financial Future</h1>
+    <p class="lead mb-4">
+      WealthWise helps you make smarter financial decisions with powerful tools, personalized insights, and expert guidance.
+    </p>
+    <div class="hero-buttons">
+      <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-2">Get Started</a>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5">Why Choose WealthWise</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card text-center p-4 h-100">
+          <div class="feature-icon mb-3">
+            <i class="bi bi-calculator fs-1"></i>
+          </div>
+          <h3>Powerful Calculators</h3>
+          <p>Plan your loans, investments, and retirement with our suite of financial calculators.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center p-4 h-100">
+          <div class="feature-icon mb-3">
+            <i class="bi bi-graph-up-arrow fs-1"></i>
+          </div>
+          <h3>Portfolio Tracking</h3>
+          <p>Monitor your investments and track your financial progress in real-time.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center p-4 h-100">
+          <div class="feature-icon mb-3">
+            <i class="bi bi-shield-lock fs-1"></i>
+          </div>
+          <h3>Secure & Private</h3>
+          <p>Your financial data is encrypted and protected with bank-level security.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tools Section -->
+<section class="tools-section py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h2 class="mb-4">Financial Tools for Every Need</h2>
+        <p class="mb-4">Our comprehensive suite of calculators and planning tools helps you make informed decisions about:</p>
+        <ul class="tools-list mb-4">
+          <li><i class="bi bi-check-circle-fill"></i> Loan management and repayment strategies</li>
+          <li><i class="bi bi-check-circle-fill"></i> Investment portfolio optimization</li>
+          <li><i class="bi bi-check-circle-fill"></i> Retirement planning and forecasting</li>
+          <li><i class="bi bi-check-circle-fill"></i> Tax optimization strategies</li>
+        </ul>
+      </div>
+      <div class="col-lg-6 mt-4 mt-lg-0">
+        <div class="tools-image text-center">
+          <img src="{% static 'images/financial-tools.svg' %}" alt="Financial Tools" class="img-fluid rounded shadow-lg">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Learning Hub Section -->
+<section class="learning-section py-5 bg-light">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 order-lg-2">
+        <h2 class="mb-4">Expand Your Financial Knowledge</h2>
+        <p class="mb-4">Access our Learning Hub for expert articles, guides, and resources on:</p>
+        <ul class="learning-list mb-4">
+          <li><i class="bi bi-journal-text"></i> Investment strategies for beginners and experts</li>
+          <li><i class="bi bi-journal-text"></i> Tax planning and optimization techniques</li>
+          <li><i class="bi bi-journal-text"></i> Retirement planning essentials</li>
+          <li><i class="bi bi-journal-text"></i> Debt management and reduction strategies</li>
+        </ul>
+      </div>
+      <div class="col-lg-6 order-lg-1 mt-4 mt-lg-0">
+        <div class="learning-image text-center">
+          <img src="{% static 'images/learning-hub.svg' %}" alt="Learning Hub" class="img-fluid rounded shadow-lg">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">What Our Users Say</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="testimonial-card p-4 h-100">
+          <div class="testimonial-content mb-3">
+            <p class="fst-italic">"WealthWise helped me create a solid retirement plan and track my investments all in one place. The calculators are incredibly useful!"</p>
+          </div>
+          <div class="testimonial-author">
+            <h5 class="mb-1">Sarah Johnson</h5>
+            <p class="text-muted small">Financial Analyst</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testimonial-card p-4 h-100">
+          <div class="testimonial-content mb-3">
+            <p class="fst-italic">"The loan calculator saved me thousands by helping me understand different repayment options. I'm now on track to be debt-free 5 years earlier!"</p>
+          </div>
+          <div class="testimonial-author">
+            <h5 class="mb-1">Michael Chen</h5>
+            <p class="text-muted small">Small Business Owner</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testimonial-card p-4 h-100">
+          <div class="testimonial-content mb-3">
+            <p class="fst-italic">"As someone new to investing, the Learning Hub articles have been invaluable. WealthWise makes complex financial concepts easy to understand."</p>
+          </div>
+          <div class="testimonial-author">
+            <h5 class="mb-1">Emily Rodriguez</h5>
+            <p class="text-muted small">Marketing Director</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5 bg-primary text-white text-center">
+  <div class="container">
+    <h2 class="mb-3">Ready to Take Control of Your Finances?</h2>
+    <p class="lead mb-4">Join thousands of users who are making smarter financial decisions with WealthWise.</p>
+    <a href="{% url 'register' %}" class="btn btn-light btn-lg">Create Your Free Account</a>
+  </div>
+</section>
+{% endblock content %}
