@@ -13,10 +13,9 @@ from django.utils import timezone
 
 
 class Source(models.Model):
-    """
-    External content source (RSS for MVP).
-    Admins can disable a feed without deleting rows by toggling `enabled`.
-    """
+    #External content source (RSS for MVP).
+    #Admins can disable a feed without deleting rows by toggling `enabled`.
+
     TYPE_CHOICES = [
         ("rss", "RSS"),
         ("hacker_news", "Hacker News"),
@@ -38,10 +37,9 @@ class Source(models.Model):
 
 
 class Article(models.Model):
-    """
-    Normalized article we list and link out to (snippet + external link).
-    JSON-like fields are stored as TEXT to stay SQLite-friendly.
-    """
+    #Normalized article we list and link out to (snippet + external link).
+    #JSON-like fields are stored as TEXT to stay SQLite-friendly.
+
     source = models.ForeignKey(Source, on_delete=models.PROTECT, related_name="articles")
 
     title = models.CharField(max_length=500)
@@ -69,33 +67,11 @@ class Article(models.Model):
     def __str__(self) -> str:
         return self.title
 
-""""
-class UserProfile(models.Model):
-    #Per-user tier. Anonymous users have no row (they're not logged in).
-    #New signups default to 'free' via a post_save signal.
-    TIER_CHOICES = [
-        ("free", "Free"),
-        ("standard", "Standard"),
-        ("premium", "Premium"),
-    ]
-
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        primary_key=True,
-        related_name="profile",
-    )
-    tier = models.CharField(max_length=20, choices=TIER_CHOICES, default="free")
-
-    def __str__(self) -> str:
-        return f"{self.user.username} [{self.tier}]"
-"""
 
 class ReadEvent(models.Model):
-    """
-    Logged-in metering record. One record per (user, article, local day).
-    Anonymous metering is cookie-based and not stored here.
-    """
+    #Logged-in metering record. One record per (user, article, local day).
+    #Anonymous metering is cookie-based and not stored here.
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="read_events"
     )

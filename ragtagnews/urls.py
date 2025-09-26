@@ -16,10 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from news.views import home_view #Probably change to news feed page
+from news.views import home_view
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', home_view, name='home'), # The empty path (home page) prob change to news feed
+    path('', home_view, name='home'),
     path('admin/', admin.site.urls),
     path('Profile/', include('Profile.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -13,24 +13,13 @@
       <div class="settings-sidebar">
         <div class="profile-nav mt-4">
           <div class="list-group">
-            <a
-              href="{% url 'profile' %}"
-              class="list-group-item list-group-item-action"
-            >
+            <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
               <i class="bi bi-person me-2"></i>Profile Information
-            </a>
-              <i class="bi bi-shield-lock me-2"></i>Account Settings
-            </a>
-            <a href="#" class="list-group-item list-group-item-action">
-              <i class="bi bi-bell me-2"></i>Notifications
             </a>
             <a href="#" class="list-group-item list-group-item-action active">
               <i class="bi bi-credit-card me-2"></i>Payment Methods
             </a>
-            <a
-              href="{% url 'logout' %}"
-              class="list-group-item list-group-item-action"
-            >
+            <a href="{% url 'logout' %}" class="list-group-item list-group-item-action">
               <i class="bi bi-box-arrow-right me-2"></i>Logout
             </a>
           </div>
@@ -109,12 +98,7 @@
             <div class="mb-3">
               <div class="input-group">
                 <span class="input-group-text">Country:</span>
-                <select
-                  name="country"
-                  id="country"
-                  class="form-select"
-                  required
-                >
+                <select name="country" id="country" class="form-select" required>
                   <option value="" disabled selected>
                     Select your country
                   </option>

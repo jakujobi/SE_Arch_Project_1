@@ -20,10 +20,11 @@ class CustomUserCreationForm(UserCreationForm):
         return user
 
 class ProfileForm(forms.ModelForm):
+    username = forms.CharField(required=True, help_text="Required")
     first_name = forms.CharField(required=True, help_text="Required")
     last_name = forms.CharField(required=True, help_text="Required")
     email = forms.EmailField(required=True, help_text="Required. Enter a valid email address.")
 
     class Meta:
         model = Profile
-        fields = ['email', 'first_name', 'last_name']
+        fields = ['username', 'first_name', 'last_name', 'email']

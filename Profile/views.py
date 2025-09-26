@@ -77,16 +77,27 @@ def profile(request):
     return render(request, 'profile.html', {
             'subscription_string': subscription_string,
         })
-    
+
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            profile = form.save(commit=False)
+            # Update data in the User model
+            request.user.first_name = form.cleaned_data['first_name']
+            request.user.last_name = form.cleaned_data['last_name']
+            request.user.username = form.cleaned_data['username']
+            request.user.email = form.cleaned_data['email']
+            request.user.save()
+            profile.save()
+            return redirect('profile')
     else:
         form = ProfileForm(instance=request.user.profile, initial={
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
             'email': request.user.email,
+            'username': request.user.username
         })
     return render(request, 'edit_profile.html', {
         'form': form,
@@ -135,7 +146,7 @@ def payment(request):
             else:
                 new_subscription = Subscription(
                     user_id = user_profile,
-                    tier = "Standard",
+                    tier = "Premium",
                     start_date = date.today(),
                     end_date = date.today() + timedelta(days=subscription_days),
                 )

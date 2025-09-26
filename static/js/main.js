@@ -1,4 +1,4 @@
-// WealthWise Main JavaScript File
+// The Egg Main JavaScript File
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize tooltips
