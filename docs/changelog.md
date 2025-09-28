@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 This project follows a simple **Added/Changed/Fixed/Removed** format.
 
+## [Unreleased]
+
+### Added
+- **User Authentication & Profile App (`Profile`)**
+  - Created a new Django app, `Profile`, to handle all user-related functionality.
+  - Implemented user registration, login, and logout views.
+  - Added profile viewing and editing capabilities.
+  - *Contributor: John Akujobi*
+- **Subscription & Payment Models**
+  - Added `Subscription` and `Payment` models to the `Profile` app, extending the project beyond the MVP to support time-based subscriptions.
+  - Created a payment view to simulate purchasing or extending a subscription.
+  - *Contributor: John Akujobi*
+- **News Ingestion Management Command (`ingest_news`)**
+  - Created a robust, idempotent management command (`ingest_news`) within the `news` app to fetch articles from RSS feeds.
+  - Implemented a file-based lock to prevent concurrent runs, ensuring safe execution.
+  - Added logic to automatically seed the `Source` table from the `FEEDS` list in `settings.py`.
+  - Built-in error handling to gracefully skip failing feeds without crashing the entire process.
+  - *Contributor: John Akujobi*
+
+### Database / Migrations
+- Created initial migrations for the `Profile` app to create the `Profile`, `Subscription`, and `Payment` tables.
+
 ## [0.1.0] - 2025-09-23 — Bootstrap models, admin, and settings
 
 Contributor: John Akujobi
