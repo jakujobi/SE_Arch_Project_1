@@ -17,6 +17,7 @@ import requests
 from readability import Document
 from urllib.parse import urljoin
 import re
+import html
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -151,7 +152,7 @@ class Command(BaseCommand):
             hash=dedup_hash,
             defaults={
                 'source': source,
-                'title': entry.get('title', 'No Title Provided'),
+                'title': html.unescape(entry.get('title', 'No Title Provided')),
                 'url': entry.link,
                 'summary': entry.get('summary', ''),
                 'published_at': published_time,
