@@ -3,7 +3,33 @@
 All notable changes to this project will be documented in this file.
 This project follows a simple **Added/Changed/Fixed/Removed** format.
 
-## [Unreleased]
+## [0.2.0] - 2025-09-28 — Content Display Implementation
+
+Contributor: John Akujobi
+
+### Added
+
+- **Architectural Tier Bridge**: Implemented the `get_current_tier()` method on the `Profile` model. This creates a clean, decoupled interface between the `Profile` app's subscription logic and the `news` app's content display logic.
+- **Dynamic Headlines Page**:
+    - The main `home_view` now fetches and displays articles from the database.
+    - Content is **tier-aware**: anonymous users see headlines only, while authenticated users see summaries.
+    - Implemented a paginator to display 15 articles per page for better performance.
+- **Article Detail Page**:
+    - Created a new `article_detail_view` with a corresponding URL (`/article/<id>/`) and template to display individual articles.
+    - The headlines page now correctly links to each article's detail page.
+- **Improved UI**: Updated the headlines page to a more visually appealing grid layout that includes article thumbnails.
+
+### Changed
+
+- Refactored the project's URL configuration to use `include('news.urls')`, following Django best practices for app-specific URLs.
+- Reorganized app-specific templates into subdirectories (e.g., `news/templates/news/`) to prevent name collisions and fix `TemplateDoesNotExist` errors.
+
+### Fixed
+
+- **Database Migrations**: Resolved an `OperationalError: no such table` by running the necessary `makemigrations` and `migrate` commands for the `Profile` app.
+- **Template Paths**: Corrected template loading errors by adjusting template paths in the views to match the new directory structure.
+
+## [0.1.5] - 2025-09-28 — User Management & Content Ingestion
 
 ### Added
 
