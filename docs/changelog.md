@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 This project follows a simple **Added/Changed/Fixed/Removed** format.
 
+## [0.3.0] - 2025-09-29 — Full Content Ingestion
+
+### Added
+- **Full Content Storage**: Added a `content` field to the `Article` model in `news/models.py` to store the full HTML content of articles.
+- **Content-Aware Ingestion**: The `ingest_news` management command now intelligently checks RSS feeds for full article content (often in a `content` field) and saves it. If full content is not available, it gracefully falls back to using the article summary.
+
+### Changed
+- **Article Detail View**: The article detail template (`article_detail.html`) now prioritizes displaying the full `content` if it exists, otherwise it will show the `summary`. This provides a richer reading experience when full content is available.
+
+### Database / Migrations
+- Created `news/migrations/0003_article_content.py` to add the new `content` column to the `news_article` table.
+
 ## [0.2.0] - 2025-09-28 — Content Display Implementation
 
 Contributor: John Akujobi

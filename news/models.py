@@ -45,6 +45,7 @@ class Article(models.Model):
     title = models.CharField(max_length=500)
     url = models.URLField(max_length=1000)
     summary = models.TextField(blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
     image_url = models.URLField(max_length=1000, blank=True, null=True)
 
     # Store timestamps in UTC; convert in views if needed.

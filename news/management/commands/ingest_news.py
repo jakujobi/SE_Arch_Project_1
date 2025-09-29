@@ -13,6 +13,8 @@ This command is designed to be safe, reliable, and idempotent.
 import hashlib
 import feedparser
 from pathlib import Path
+import requests
+from goose3 import Goose
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -81,10 +83,13 @@ class Command(BaseCommand):
         for source in enabled_sources:
             self.stdout.write(f"\n--- Fetching from: {source.name} ---")
             try:
-                # Use a timeout to prevent the command from hanging indefinitely.
-                # Note: feedparser doesn't have a direct timeout, this would be
-                # better with 'requests', but for MVP we stick to the plan.
-                feed = feedparser.parse(source.url)
+                # Use requests to handle character encoding issues gracefully.
+                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+                response = requests.get(source.url, headers=headers, timeout=15)
+                response.raise_for_status() # Raise an exception for bad status codes
+
+                # Pass the content to feedparser
+                feed = feedparser.parse(response.content)
                 
                 if feed.bozo:
                     # bozo is true if the feed is malformed.
@@ -123,6 +128,13 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f"  ? Could not parse date: {entry.get('published')}"))
         
         # --- Database Upsert ---
+        
+        # Prioritize full content from feed, fallback to summary
+        content_from_feed = entry.get('summary', '') # Default to summary
+        if hasattr(entry, 'content'):
+            # 'content' is often a list of available content types
+            content_from_feed = entry.content[0].value
+
         article, created = Article.objects.update_or_create(
             hash=dedup_hash,
             defaults={
@@ -131,8 +143,26 @@ class Command(BaseCommand):
                 'url': entry.link,
                 'summary': entry.get('summary', ''),
                 'published_at': published_time,
+                # Initially, we might only have the summary
+                'content': content_from_feed,
             }
         )
+
+        # --- Scrape for Full Content ---
+        # If the content is short or missing, try to scrape it from the source URL.
+        # We check if content is same as summary or very short.
+        if not article.content or len(article.content) < len(article.summary) + 200:
+             try:
+                self.stdout.write(f"  ? Content looks like summary, attempting to scrape: {article.title[:60]}...")
+                g = Goose({'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'})
+                scraped_article = g.extract(url=article.url)
+                if scraped_article.cleaned_text:
+                    article.content = scraped_article.cleaned_text
+                    article.save()
+                    self.stdout.write(self.style.SUCCESS(f"  ✓ Successfully scraped and updated: {article.title[:60]}..."))
+             except Exception as e:
+                self.stderr.write(self.style.ERROR(f"  ✗ Failed to scrape {article.url}: {e}"))
+
 
         if created:
             self.stdout.write(self.style.SUCCESS(f"  + Created: {article.title[:60]}..."))

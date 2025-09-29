@@ -15,8 +15,12 @@
             <img src="{{ article.image_url }}" class="img-fluid rounded mb-4" alt="{{ article.title }}">
             {% endif %}
 
-            <div class="article-summary">
-                {{ article.summary|safe }}
+            <div class="article-body">
+                {% if article.content %}
+                    {{ article.content|linebreaks }}
+                {% else %}
+                    {{ article.summary|safe }}
+                {% endif %}
             </div>
 
             <hr class="my-4">

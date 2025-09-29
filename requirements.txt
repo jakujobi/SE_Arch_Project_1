@@ -2,3 +2,4 @@ django
 feedparser
 requests
 python-dateutil
+goose3
