@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 This project follows a simple **Added/Changed/Fixed/Removed** format.
 
+## [0.2.0] - 2025-09-28 — Content Display Implementation
+
+Contributor: John Akujobi
+
+### Added
+
+- **Architectural Tier Bridge**: Implemented the `get_current_tier()` method on the `Profile` model. This creates a clean, decoupled interface between the `Profile` app's subscription logic and the `news` app's content display logic.
+- **Dynamic Headlines Page**:
+    - The main `home_view` now fetches and displays articles from the database.
+    - Content is **tier-aware**: anonymous users see headlines only, while authenticated users see summaries.
+    - Implemented a paginator to display 15 articles per page for better performance.
+- **Article Detail Page**:
+    - Created a new `article_detail_view` with a corresponding URL (`/article/<id>/`) and template to display individual articles.
+    - The headlines page now correctly links to each article's detail page.
+- **Improved UI**: Updated the headlines page to a more visually appealing grid layout that includes article thumbnails.
+
+### Changed
+
+- Refactored the project's URL configuration to use `include('news.urls')`, following Django best practices for app-specific URLs.
+- Reorganized app-specific templates into subdirectories (e.g., `news/templates/news/`) to prevent name collisions and fix `TemplateDoesNotExist` errors.
+
+### Fixed
+
+- **Database Migrations**: Resolved an `OperationalError: no such table` by running the necessary `makemigrations` and `migrate` commands for the `Profile` app.
+- **Template Paths**: Corrected template loading errors by adjusting template paths in the views to match the new directory structure.
+
+## [0.1.5] - 2025-09-28 — User Management & Content Ingestion
+
+### Added
+
+- **User Authentication & Profile App (`Profile`)**
+  - Created a new Django app, `Profile`, to handle all user-related functionality.
+  - Implemented user registration, login, and logout views.
+  - Added profile viewing and editing capabilities.
+  - *Contributor: Draix Wyatt*
+- **Subscription & Payment Models**
+  - Added `Subscription` and `Payment` models to the `Profile` app, extending the project beyond the MVP to support time-based subscriptions.
+  - Created a payment view to simulate purchasing or extending a subscription.
+  - *Contributor: Draix Wyatt*
+- **News Ingestion Management Command (`ingest_news`)**
+  - Created a robust, idempotent management command (`ingest_news`) within the `news` app to fetch articles from RSS feeds.
+  - Implemented a file-based lock to prevent concurrent runs, ensuring safe execution.
+  - Added logic to automatically seed the `Source` table from the `FEEDS` list in `settings.py`.
+  - Built-in error handling to gracefully skip failing feeds without crashing the entire process.
+  - *Contributor: John Akujobi*
+
+### Database / Migrations
+
+- Created initial migrations for the `Profile` app to create the `Profile`, `Subscription`, and `Payment` tables.
+
 ## [0.1.0] - 2025-09-23 — Bootstrap models, admin, and settings
 
 Contributor: John Akujobi
