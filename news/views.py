@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.utils import timezone
@@ -43,4 +43,17 @@ def home_view(request):
         'is_stale': is_stale,
         'current_tier': current_tier, # Pass the tier for display if needed
     }
-    return render(request, 'news.html', context)
+    return render(request, 'news/news.html', context)
+
+
+def article_detail_view(request, article_id):
+    """
+    Displays the details for a single article.
+    (Metering logic will be added here later).
+    """
+    article = get_object_or_404(Article, pk=article_id)
+
+    context = {
+        'article': article,
+    }
+    return render(request, 'news/article_detail.html', context)
