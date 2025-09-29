@@ -14,7 +14,9 @@ import hashlib
 import feedparser
 from pathlib import Path
 import requests
-from goose3 import Goose
+from readability import Document
+from urllib.parse import urljoin
+import re
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -109,6 +111,16 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("  - Skipping entry with no link."))
             return
         
+        # --- Thumbnail Extraction from Feed ---
+        image_url = None
+        if 'media_thumbnail' in entry:
+            image_url = entry.media_thumbnail[0]['url']
+        elif 'links' in entry:
+            for link in entry.links:
+                if link.get('rel') == 'enclosure' and 'image' in link.get('type', ''):
+                    image_url = link.href
+                    break
+        
         # --- Deduplication ---
         hash_input = entry.link.encode('utf-8')
         dedup_hash = hashlib.sha256(hash_input).hexdigest()
@@ -143,23 +155,33 @@ class Command(BaseCommand):
                 'url': entry.link,
                 'summary': entry.get('summary', ''),
                 'published_at': published_time,
+                'image_url': image_url,
                 # Initially, we might only have the summary
                 'content': content_from_feed,
             }
         )
 
-        # --- Scrape for Full Content ---
-        # If the content is short or missing, try to scrape it from the source URL.
-        # We check if content is same as summary or very short.
+        # --- Scrape for Full HTML Content ---
+        # If the content is short or missing, scrape it from the source URL.
         if not article.content or len(article.content) < len(article.summary) + 200:
              try:
-                self.stdout.write(f"  ? Content looks like summary, attempting to scrape: {article.title[:60]}...")
-                g = Goose({'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'})
-                scraped_article = g.extract(url=article.url)
-                if scraped_article.cleaned_text:
-                    article.content = scraped_article.cleaned_text
-                    article.save()
-                    self.stdout.write(self.style.SUCCESS(f"  ✓ Successfully scraped and updated: {article.title[:60]}..."))
+                self.stdout.write(f"  ? Content looks like summary, scraping: {article.title[:60]}...")
+                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+                response = requests.get(article.url, headers=headers, timeout=20)
+                response.raise_for_status()
+
+                doc = Document(response.text)
+                article.content = doc.summary() # This is cleaned HTML
+
+                # If we still don't have a thumbnail, try to get the first image from the scraped content
+                if not article.image_url:
+                    img_match = re.search(r'<img [^>]*src="([^"]+)"', article.content)
+                    if img_match:
+                        # Make sure URL is absolute
+                        article.image_url = urljoin(article.url, img_match.group(1))
+
+                article.save()
+                self.stdout.write(self.style.SUCCESS(f"  ✓ Scraped and updated: {article.title[:60]}..."))
              except Exception as e:
                 self.stderr.write(self.style.ERROR(f"  ✗ Failed to scrape {article.url}: {e}"))
 
