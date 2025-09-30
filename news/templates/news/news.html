@@ -33,7 +33,7 @@
     <div class="row">
       {% for article in page_obj %}
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="card h-100">
+        <div class="card h-100 article-card">
           {% if article.image_url %}
           <img src="{{ article.image_url }}" class="card-img-top" alt="{{ article.title }}" style="object-fit: cover; height: 200px;">
           {% endif %}

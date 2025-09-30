@@ -3,35 +3,38 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row">
-        <div class="col-lg-8 offset-lg-2">
+        <div class="col-lg-12">
             
-            <h1 class="mb-3">{{ article.title }}</h1>
-            
-            <p class="text-muted">
-                Published on {{ article.published_at|date:"F j, Y, P" }} by {{ article.source.name }}
-            </p>
-
-            {% if article.image_url %}
-            <img src="{{ article.image_url }}" class="img-fluid rounded mb-4" alt="{{ article.title }}">
-            {% endif %}
-
-            <div class="article-body">
-                {% if article.content %}
-                    {{ article.content|safe }}
-                {% else %}
-                    {{ article.summary|safe }}
+            <div class="article-container">
+                <div class="article-header">
+                    <h1>{{ article.title }}</h1>
+                    <p class="article-meta">
+                        Published on {{ article.published_at|date:"F j, Y, P" }} by {{ article.source.name }}
+                    </p>
+                </div>
+    
+                {% if article.image_url %}
+                    <img src="{{ article.image_url }}" class="img-fluid rounded mb-4 article-featured-image" alt="{{ article.title }}">
                 {% endif %}
+    
+                <div class="article-body">
+                    {% if article.content %}
+                        {{ article.content|safe }}
+                    {% else %}
+                        {{ article.summary|safe }}
+                    {% endif %}
+                </div>
+    
+                <hr class="my-4">
+    
+                <a href="{{ article.url }}" class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">
+                    Article sourced from {{ article.source.name }}
+                </a>
+                
+                <a href="{% url 'news:home' %}" class="btn btn-secondary btn-lg">
+                    &laquo; Back to Headlines
+                </a>
             </div>
-
-            <hr class="my-4">
-
-            <a href="{{ article.url }}" class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">
-                Article sourced from {{ article.source.name }}
-            </a>
-            
-            <a href="{% url 'news:home' %}" class="btn btn-secondary btn-lg">
-                &laquo; Back to Headlines
-            </a>
 
         </div>
     </div>
