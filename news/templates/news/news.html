@@ -5,8 +5,8 @@
 <section class="hero-section text-center py-5">
   <div class="container">
     <h1 class="display-4 fw-bold mb-3">The Latest in News and Blogs</h1>
-    <p class="lead mb-4">
-      The egg provides the most up-to-date news and blog posts for all your information needs.
+    <p class="lead mb-4 font-secondary">
+      The Egg provides the most up-to-date news and blog posts for all your information needs.
     </p>
     {% if not user.is_authenticated %}
     <div class="hero-buttons">
@@ -23,8 +23,8 @@
       <div class="col-lg-6">
         <h2 class="mb-4">News and Blogs</h2>
         {% if is_stale %}
-        <div class="alert alert-warning" role="alert">
-          <small>The content is older than {{ settings.TTL_MINUTES }} minutes and may be out of date. A refresh is in progress.</small>
+        <div class="alert alert-warning text-error" role="alert">
+          <span>The content is older than {{ settings.TTL_MINUTES }} minutes and may be out of date. A refresh is in progress.</span>
         </div>
         {% endif %}
       </div>
@@ -88,7 +88,7 @@
       <div class="col-md-4">
         <div class="testimonial-card p-4 h-100">
           <div class="testimonial-content mb-3">
-            <p class="fst-italic">"The Egg provides the nest news and blog posts on the entire internet! I feel so informed each day!"</p>
+            <p class="fst-italic font-secondary">"The Egg provides the nest news and blog posts on the entire internet! I feel so informed each day!"</p>
           </div>
           <div class="testimonial-author">
             <h5 class="mb-1">Sarah Johnson</h5>
