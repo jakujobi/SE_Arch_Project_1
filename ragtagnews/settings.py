@@ -118,37 +118,13 @@ FEEDS: list[str] = [  # NEW
     "https://www.theverge.com/rss/index.xml",
     "https://arstechnica.com/feed/",
     "https://www.wired.com/feed/rss",
-    "https://www.engadget.com/rss.xml",
+    #"https://www.engadget.com/rss.xml", #Throws errors about character encoding when ingesting news; commented out
 ]
 
 # --- Limits & refresh (class-friendly defaults) ---
-ANON_READS_PER_DAY     = _getint("ANON_READS_PER_DAY", 3)   # NEW
-FREE_READS_PER_DAY     = _getint("FREE_READS_PER_DAY", 5)   # NEW
-STANDARD_READS_PER_DAY = _getint("STANDARD_READS_PER_DAY", 11)  # NEW
 TTL_MINUTES            = _getint("TTL_MINUTES", 10)         # NEW
 LAZY_REFRESH           = _getbool("LAZY_REFRESH", True)     # NEW
 
 # Optional helpers used by commands/views
 FETCH_TIMEOUT_SECONDS  = _getint("FETCH_TIMEOUT_SECONDS", 5)   # NEW (RSS fetch timeout)
 MAX_SEARCH_RESULTS     = _getint("MAX_SEARCH_RESULTS", 50)     # NEW (cap search results)
-
-# --- Minimal per-tier display config (keep tiny, no complexity) ---
-# Headlines content: anonymous=title only; logged-in tiers=summary
-TIER_CONFIG = {  # NEW
-    "anonymous": {
-        "pages": {"headlines": {"content_level": "headline"}, "detail": True, "search": True},
-        "metering": {"applies": True, "reads_per_day": ANON_READS_PER_DAY},
-    },
-    "free": {
-        "pages": {"headlines": {"content_level": "summary"}, "detail": True, "search": True},
-        "metering": {"applies": True, "reads_per_day": FREE_READS_PER_DAY},
-    },
-    "standard": {
-        "pages": {"headlines": {"content_level": "summary"}, "detail": True, "search": True},
-        "metering": {"applies": True, "reads_per_day": STANDARD_READS_PER_DAY},
-    },
-    "premium": {
-        "pages": {"headlines": {"content_level": "summary"}, "detail": True, "search": True},
-        "metering": {"applies": False, "reads_per_day": 999_999},
-    },
-}

@@ -24,7 +24,7 @@
         <h2 class="mb-4">News and Blogs</h2>
         {% if is_stale %}
         <div class="alert alert-warning text-error" role="alert">
-          <span>The content is older than {{ settings.TTL_MINUTES }} minutes and may be out of date. A refresh is in progress.</span>
+          <span>New articles have not been found in {{minutes}} minutes. The source may not have updated yet.</span>
         </div>
         {% endif %}
       </div>
@@ -42,19 +42,25 @@
             <h6 class="card-subtitle mb-2 text-muted">
               Published on {{ article.published_at|date:"F j, Y, P" }} by {{ article.source.name }}
             </h6>
-            
-            {% if content_level == 'summary' %}
+            {% if current_tier == 'anonymous' %}
+            <a href="{% url 'register' %}" class="btn btn-primary mt-auto">Register To Read More</a>
+            {% elif current_tier == 'free' %}
             <p class="card-text">{{ article.summary|safe|truncatewords:30 }}</p>
+              {% if article.tier == 'free' %}
+              <a href="{% url 'article_detail' article.id %}" class="btn btn-primary mt-auto">Read More</a>
+              {% else %}
+              <a href="{% url 'payment' %}" class="btn btn-primary mt-auto">Subscribe To Read More</a>
+              {% endif %}
+            {% else %} <!-- current_tier == 'Standard' -->
+            <p class="card-text">{{ article.summary|safe|truncatewords:30 }}</p>
+            <a href="{% url 'article_detail' article.id %}" class="btn btn-primary mt-auto">Read More</a>
             {% endif %}
-
-            <a href="{% url 'news:article_detail' article.id %}" class="btn btn-primary mt-auto">Read More</a>
           </div>
         </div>
       </div>
       {% empty %}
       <div class="col-12">
-        <p>No articles found. Please run the ingestion command to populate the database:</p>
-        <pre class="bg-light p-2"><code>python manage.py ingest_news</code></pre>
+        <p>No articles found</p>
       </div>
       {% endfor %}
     </div>

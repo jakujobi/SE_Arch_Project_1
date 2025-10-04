@@ -16,6 +16,7 @@ class Source(models.Model):
     #External content source (RSS for MVP).
     #Admins can disable a feed without deleting rows by toggling `enabled`.
 
+    #Ended up just doing other source. This is an artifact now
     TYPE_CHOICES = [
         ("rss", "RSS"),
         ("hacker_news", "Hacker News"),
@@ -51,9 +52,8 @@ class Article(models.Model):
     published_at = models.DateTimeField(blank=True, null=True)
     ingested_at = models.DateTimeField(default=timezone.now)
 
-    # JSON-encoded lists (e.g., '["AI","Gadgets"]'); keep as TEXT for SQLite.
-    tags = models.TextField(blank=True, null=True)
-    keywords = models.TextField(blank=True, null=True)
+    TIER_CHOICES = [("standard", "Standard"), ("free", "Free")]
+    tier = models.CharField(max_length=20, choices=TIER_CHOICES)
 
     # Dedup key computed by the ingest command: sha256(canonical_link or link or title).
     hash = models.CharField(max_length=64, unique=True)

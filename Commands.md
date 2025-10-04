@@ -13,8 +13,6 @@
   * `pip freeze > requirements-lock.txt`
 
 
-
-
 # **Environment**
 
 * Create venv: `py -3.13 -m venv .venv`
@@ -28,11 +26,6 @@
 * Apply migrations: `python manage.py migrate`
 * Create superuser: `python manage.py createsuperuser`
 * Seed demo users: `python manage.py seed_demo`
-
-
-## **Ingestion**
-
-* Run RSS ingest: `python manage.py ingest_news`
 
 
 ## **Run app**

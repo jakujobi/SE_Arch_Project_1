@@ -146,7 +146,7 @@ def payment(request):
             else:
                 new_subscription = Subscription(
                     user_id = user_profile,
-                    tier = "Premium",
+                    tier = "Standard",
                     start_date = date.today(),
                     end_date = date.today() + timedelta(days=subscription_days),
                 )

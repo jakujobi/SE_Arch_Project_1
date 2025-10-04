@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 
-
 # Profile
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -42,11 +41,7 @@ class Profile(models.Model):
 # Subsciption
 class Subscription(models.Model):
     user_id = models.ForeignKey('Profile.Profile', on_delete=models.CASCADE)
-    TIER_CHOICES = [
-    ("free", "Free"),
-    ("standard", "Standard"),
-    ("premium", "Premium"),
-    ]
+    TIER_CHOICES = [("standard", "Standard"), ("Free", "free")]
     tier = models.CharField(max_length=20, choices=TIER_CHOICES, default="free")
     start_date = models.DateField()
     end_date = models.DateField()
